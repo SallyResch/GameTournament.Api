@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GameTournament.Core.Repositories
 {
-    internal interface ITournamentRepository
+    public interface ITournamentRepository
     {
         Task<IEnumerable<Tournament>> GetAllAsync();
         Task<Tournament> GetAsync(int id);
