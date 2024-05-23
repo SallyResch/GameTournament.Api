@@ -13,6 +13,7 @@ namespace GameTournament.Core.Repositories
         Task<Tournament> GetAsync(int id);
         Task<bool> AnyAsync(int id);
         void Add (Tournament tournament);
+        Task AddAsync (Tournament tournament);
         void Update(Tournament tournament);
         void Remove (Tournament tournament);
     }

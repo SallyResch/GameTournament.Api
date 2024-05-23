@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameTournament.Data.Data;
 using GameTournament.Core.Entities;
+using GameTournament.Core.Repositories;
 
 namespace GameTournament.Api.Controllers
 {
@@ -14,25 +15,43 @@ namespace GameTournament.Api.Controllers
     [ApiController]
     public class TournamentsController : ControllerBase
     {
-        private readonly GameTournamentApiContext _context;
+        //private readonly GameTournamentApiContext _context;
 
-        public TournamentsController(GameTournamentApiContext context)
+        /* public TournamentsController(GameTournamentApiContext context)
+         {
+             _context = context;
+         }*/
+
+
+       
+
+
+        private readonly IUoWRepository _uowRepository;
+        public TournamentsController (IUoWRepository uowRepository)
         {
-            _context = context;
+            _uowRepository = uowRepository;
         }
 
-        // GET: api/Tournaments
+        /*// GET: api/Tournaments
+       [HttpGet]
+       public async Task<ActionResult<IEnumerable<Tournament>>> GetTournament()
+       {
+           return await _context.Tournament.ToListAsync();
+       }
+       */
+        // GET ALL TOURNAMENTS: api/Tournaments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tournament>>> GetTournament()
+        public async Task<ActionResult<IEnumerable<Tournament>>> GetTournaments()
         {
-            return await _context.Tournament.ToListAsync();
+            var tournaments = await _uowRepository.TournamentRepository.GetAllAsync();
+            return Ok(tournaments);
         }
 
-        // GET: api/Tournaments/5
+        // GET SPECIFIC TOURNAMENT: api/Tournaments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Tournament>> GetTournament(int id)
         {
-            var tournament = await _context.Tournament.FindAsync(id);
+            var tournament = await _uowRepository.TournamentRepository.GetAsync(id);
 
             if (tournament == null)
             {
@@ -42,8 +61,36 @@ namespace GameTournament.Api.Controllers
             return tournament;
         }
 
-        // PUT: api/Tournaments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /* // PUT: api/Tournaments/5
+         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+         [HttpPut("{id}")]
+         public async Task<IActionResult> PutTournament(int id, Tournament tournament)
+         {
+             if (id != tournament.Id)
+             {
+                 return BadRequest();
+             }
+
+             _context.Entry(tournament).State = EntityState.Modified;
+
+             try
+             {
+                 await _context.SaveChangesAsync();
+             }
+             catch (DbUpdateConcurrencyException)
+             {
+                 if (!TournamentExists(id))
+                 {
+                     return NotFound();
+                 }
+                 else
+                 {
+                     throw;
+                 }
+             }
+
+             return NoContent();
+         }*/
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTournament(int id, Tournament tournament)
         {
@@ -52,15 +99,15 @@ namespace GameTournament.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(tournament).State = EntityState.Modified;
+            _uowRepository.TournamentRepository.Update(tournament);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uowRepository.CompleteAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TournamentExists(id))
+                if (!await TournamentExists(id))
                 {
                     return NotFound();
                 }
@@ -73,7 +120,7 @@ namespace GameTournament.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Tournaments
+        /*// POST: api/Tournaments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Tournament>> PostTournament(Tournament tournament)
@@ -83,8 +130,19 @@ namespace GameTournament.Api.Controllers
 
             return CreatedAtAction("GetTournament", new { id = tournament.Id }, tournament);
         }
+        */
 
-        // DELETE: api/Tournaments/5
+        // POST: api/Tournaments
+        [HttpPost]
+        public async Task<ActionResult<Tournament>> PostTournament(Tournament tournament)
+        {
+            await _uowRepository.TournamentRepository.AddAsync(tournament);
+            await _uowRepository.CompleteAsync();
+
+            return CreatedAtAction("GetTournament", new { id = tournament.Id }, tournament);
+        }
+
+        /*// DELETE: api/Tournaments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTournament(int id)
         {
@@ -99,10 +157,32 @@ namespace GameTournament.Api.Controllers
 
             return NoContent();
         }
+        */
 
-        private bool TournamentExists(int id)
+        // DELETE: api/Tournaments/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTournament(int id)
+        {
+            var tournament = await _uowRepository.TournamentRepository.GetAsync(id);
+            if (tournament == null)
+            {
+                return NotFound();
+            }
+
+            _uowRepository.TournamentRepository.Remove(tournament);
+            await _uowRepository.CompleteAsync();
+
+            return NoContent();
+        }
+        /* private bool TournamentExists(int id)
         {
             return _context.Tournament.Any(e => e.Id == id);
+        }
+       */
+        private async Task<bool> TournamentExists(int id)
+        {
+            var tournament = await _uowRepository.TournamentRepository.GetAsync(id);
+            return tournament != null;
         }
     }
 }

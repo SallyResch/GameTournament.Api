@@ -22,7 +22,10 @@ namespace GameTournament.Data.Repositories
         {
             throw new NotImplementedException();
         }
-
+        public async Task AddAsync(Tournament tournament)
+        {
+            await _context.Tournament.AddAsync(tournament);
+        }
         public Task<bool> AnyAsync(int id)
         {
             throw new NotImplementedException();
