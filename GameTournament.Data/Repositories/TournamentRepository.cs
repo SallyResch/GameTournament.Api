@@ -1,6 +1,7 @@
 ﻿using GameTournament.Core.Entities;
 using GameTournament.Core.Repositories;
 using GameTournament.Data.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,29 +27,29 @@ namespace GameTournament.Data.Repositories
         {
             await _context.Tournament.AddAsync(tournament);
         }
-        public Task<bool> AnyAsync(int id)
+        public async Task<bool> AnyAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Tournament.AnyAsync(t => t.Id == id);
         }
 
-        public Task<IEnumerable<Tournament>> GetAllAsync()
+        public async Task<IEnumerable<Tournament>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Tournament.ToListAsync();
         }
 
-        public Task<Tournament> GetAsync(int id)
+        public async Task<Tournament> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Tournament.FindAsync(id);
         }
 
         public void Remove(Tournament tournament)
         {
-            throw new NotImplementedException();
+            _context.Tournament.Remove(tournament);
         }
 
         public void Update(Tournament tournament)
         {
-            throw new NotImplementedException();
+            _context.Entry(tournament).State = EntityState.Modified;
         }
     }
 }
