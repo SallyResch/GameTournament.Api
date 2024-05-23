@@ -9,5 +9,6 @@ namespace GameTournament.Data.Data
 {
     internal class TournamentMappings
     {
+        //Uppgift punkt.25
     }
 }
