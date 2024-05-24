@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameTournament.Core.Dto
 {
-    internal class TournamentDto
+    public class TournamentDto
     {
         public string Title { get; set; }
         public DateTime StartDate { get; set; }
