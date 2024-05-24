@@ -17,6 +17,7 @@ builder.Services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
     .AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddScoped<IUoWRepository,UoWRepository>();
+builder.Services.AddAutoMapper(typeof(TournamentMappings));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

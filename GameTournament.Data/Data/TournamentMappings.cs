@@ -4,10 +4,12 @@ using System.Linq;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+
 
 namespace GameTournament.Data.Data
 {
-    internal class TournamentMappings
+    public class TournamentMappings : Profile
     {
         //Uppgift punkt.25
     }
