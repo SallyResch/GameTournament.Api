@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using GameTournament.Data.Data;
 using GameTournament.Core.Entities;
 using GameTournament.Core.Repositories;
+using AutoMapper;
+using GameTournament.Core.Dto;
 
 namespace GameTournament.Api.Controllers
 {
@@ -27,9 +29,11 @@ namespace GameTournament.Api.Controllers
 
 
         private readonly IUoWRepository _uowRepository;
-        public TournamentsController (IUoWRepository uowRepository)
+        private readonly IMapper _mapper;
+        public TournamentsController (IUoWRepository uowRepository, IMapper mapper)
         {
             _uowRepository = uowRepository;
+            _mapper = mapper;
         }
 
         /*// GET: api/Tournaments
@@ -41,7 +45,7 @@ namespace GameTournament.Api.Controllers
        */
         // GET ALL TOURNAMENTS: api/Tournaments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tournament>>> GetTournaments()
+        public async Task<ActionResult<IEnumerable<TournamentDto>>> GetTournaments()
         {
             var tournaments = await _uowRepository.TournamentRepository.GetAllAsync();
             return Ok(tournaments);
@@ -49,7 +53,7 @@ namespace GameTournament.Api.Controllers
 
         // GET SPECIFIC TOURNAMENT: api/Tournaments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tournament>> GetTournament(int id)
+        public async Task<ActionResult<TournamentDto>> GetTournament(int id)
         {
             var tournament = await _uowRepository.TournamentRepository.GetAsync(id);
 
@@ -58,7 +62,7 @@ namespace GameTournament.Api.Controllers
                 return NotFound();
             }
 
-            return tournament;
+            return Ok(tournament);
         }
 
         /* // PUT: api/Tournaments/5
@@ -134,7 +138,7 @@ namespace GameTournament.Api.Controllers
 
         // POST: api/Tournaments
         [HttpPost]
-        public async Task<ActionResult<Tournament>> PostTournament(Tournament tournament)
+        public async Task<ActionResult<TournamentDto>> PostTournament(Tournament tournament)
         {
             await _uowRepository.TournamentRepository.AddAsync(tournament);
             await _uowRepository.CompleteAsync();

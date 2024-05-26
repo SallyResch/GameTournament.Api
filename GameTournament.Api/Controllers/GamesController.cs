@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameTournament.Data.Data;
 using GameTournament.Core.Entities;
+using GameTournament.Core.Dto;
 using GameTournament.Core.Repositories;
+using AutoMapper;
 
 namespace GameTournament.Api.Controllers
 {
@@ -108,15 +110,16 @@ namespace GameTournament.Api.Controllers
         */
 
         private readonly IUoWRepository _unitOfWork;
-
-        public GamesController(IUoWRepository unitOfWork)
+        private readonly IMapper _mapper;
+        public GamesController(IUoWRepository unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         // GET: api/Games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGame()
+        public async Task<ActionResult<IEnumerable<GameDto>>> GetGame()
         {
             var games = await _unitOfWork.GameRepository.GetAllAsync();
             return Ok(games);
@@ -124,7 +127,7 @@ namespace GameTournament.Api.Controllers
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDto>> GetGame(int id)
         {
             var game = await _unitOfWork.GameRepository.GetAsync(id);
 
@@ -133,7 +136,8 @@ namespace GameTournament.Api.Controllers
                 return NotFound();
             }
 
-            return game;
+            var gameDto = _mapper.Map<GameDto>(game);
+            return Ok(gameDto);
         }
 
         // PUT: api/Games/5
@@ -168,7 +172,7 @@ namespace GameTournament.Api.Controllers
 
         // POST: api/Games
         [HttpPost]
-        public async Task<ActionResult<Game>> PostGame(Game game)
+        public async Task<ActionResult<GameDto>> PostGame(Game game)
         {
             await _unitOfWork.GameRepository.AddAsync(game);
             await _unitOfWork.CompleteAsync();
