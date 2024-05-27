@@ -13,20 +13,17 @@ namespace GameTournament.Data.Data
     {
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
-            using (var context = new GameTournamentApiContext(
-                serviceProvider.GetRequiredService<DbContextOptions<GameTournamentApiContext>>()))
+            using (var context = new GameTournamentApiContext(serviceProvider.GetRequiredService<DbContextOptions<GameTournamentApiContext>>()))
             {
-                // Look for any Tournaments.
                 if (context.Tournament.Any())
                 {
-                    return;   // DB has been seeded
+                    return;
                 }
 
                 var tournaments = new List<Tournament>
                 {
-                    new Tournament
+                    new Tournament("Spring Championship")
                     {
-                        TournamentTitle = "Spring Championship",
                         StartDate = new DateTime(2024, 5, 20),
                         Games = new List<Game>
                         {
@@ -34,14 +31,31 @@ namespace GameTournament.Data.Data
                             new Game { GameTitle = "Game 2", Time = new DateTime(2024, 5, 22) }
                         }
                     },
-                    new Tournament
+                    new Tournament("Summer Cup")
                     {
-                        TournamentTitle = "Summer Cup",
                         StartDate = new DateTime(2024, 6, 15),
                         Games = new List<Game>
                         {
                             new Game { GameTitle = "Game 3", Time = new DateTime(2024, 6, 16) },
                             new Game { GameTitle = "Game 4", Time = new DateTime(2024, 6, 17) }
+                        }
+                    },
+                     new Tournament("Winter Cup")
+                    {
+                        StartDate = new DateTime(2024, 02, 10),
+                        Games = new List<Game>
+                        {
+                            new Game { GameTitle = "Game 5", Time = new DateTime(2024, 7, 16) },
+                            new Game { GameTitle = "Game 6", Time = new DateTime(2024, 7, 17) }
+                        }
+                    },
+                      new Tournament("Fall Cup")
+                    {
+                        StartDate = new DateTime(2025, 4, 10),
+                        Games = new List<Game>
+                        {
+                            new Game { GameTitle = "Game 7", Time = new DateTime(2025, 4, 11) },
+                            new Game { GameTitle = "Game 8", Time = new DateTime(2025, 4, 12) }
                         }
                     }
                 };
